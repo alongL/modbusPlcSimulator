@@ -1,0 +1,8 @@
+nutget下载的nmodbus4无法设置0地址的值 。
+这里的NModbus4是从github上下载的https://github.com/NModbus4/NModbus4/tree/2.1.0。修改了其中ModbusDataCollection.cs 中关于index==0的判断 。
+
+
+ModbusMasterTcpConnection.cs中CatchExceptionAndRemoveMasterEndPoint函数
+ //if (!(ex is IOException || ex is FormatException || ex is ObjectDisposedException))
+                 //   throw;
+不让throw
