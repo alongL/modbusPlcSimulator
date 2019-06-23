@@ -1,7 +1,7 @@
 # modbusPlcSimulator
 modbus服务器模拟程序
 
-
+![screenshot.png](https://raw.githubusercontent.com/alongL/modbusPlcSimulator/master/imgs/screenshot.png "运行窗口")
 
 ## 一、用途
 + 主要用来模拟plc，提供配置文件，一次可以模拟多台，一键启机和停机。
