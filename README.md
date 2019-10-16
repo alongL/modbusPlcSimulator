@@ -2,7 +2,7 @@
 modbus服务器模拟程序
 
 ![screenshot.png](https://raw.githubusercontent.com/alongL/modbusPlcSimulator/master/imgs/screenshot.png "运行窗口")
-![screenshot.png](https://raw.githubusercontent.com/alongL/modbusPlcSimulator/master/imgs/screenshot-register.png "寄存器窗口")
+![screenshot-register.png](https://raw.githubusercontent.com/alongL/modbusPlcSimulator/master/imgs/screenshot-register.png "寄存器窗口")
 
 ## 一、用途
 + 主要用来模拟modbus设备，通过配置文件，一次可以模拟多台设备，一键启机和停机。
