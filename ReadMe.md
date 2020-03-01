@@ -1,7 +1,7 @@
 # modbusPlcSimulator
 multi modbus slave devices simulator (modbus server, works as  PLC devices)
 
-![Chinese version](https://github.com/alongL/modbusPlcSimulator/blob/master/README_CN.md "chinese doc")
+[Chinese version](https://github.com/alongL/modbusPlcSimulator/blob/master/README_CN.md "chinese doc")
 
 ##  1.purpose
 + This program is mainly used to simulate MODBUS devices. Through configuration files, multiple devices can be simulated at once, starting and stopping with one key. 
