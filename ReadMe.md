@@ -31,7 +31,7 @@ Register display window
 
 ## 4. Profile introduction
 + App.cfg specifies the device configuration file loaded when the program starts. The default is default.csv, which is in the config directory.
-+ Default.csv configures all types in a farm and the ports that MODBUS listens to locally. The port is generally 15011502... Etc. to avoid conflict with the port used by other programs in the system.
++ Default.csv configures all types in a farm and the ports that MODBUS listens to locally. The port is generally 1501, 1502... Etc. to avoid conflict with the port used by other programs in the system.
 + Pcs.csv is configured to simulate the type and value of Modbus registers used by a PCS device.
 + Pcs_data.csv is the data to refresh per second.
 
@@ -39,8 +39,8 @@ Register display window
 
 ## 5. Precautions
 + 1. address
-Modbus protocol uses 1 more address than the actual address. The address displayed when viewing with modscan + 1. It is recommended to set offsetaddone = 1 in the configuration file app.cfg
-+2. Value type
+Modbus protocol uses 1 more address than the actual address. The address displayed when viewing with modscan +1. It is recommended to set offsetaddone=1 in the configuration file app.cfg
++ 2. Value type
 At present, the int type is processed as a 16 bit 1 register.
 Use DWORD for 32-bit int
 Float is treated as 32-bit.
