@@ -9,10 +9,10 @@ multi modbus slave devices simulator (modbus server, works as  PLC devices)
 + Support automatic data refresh by providing * _data.csv file.
 
 
-Program run window 
+Program run window  
 ![screenshot.png](https://raw.githubusercontent.com/alongL/modbusPlcSimulator/master/imgs/screenshot.png "window UI")
 
-Register display window 
+Register display window  
 ![screenshot-register.png](https://raw.githubusercontent.com/alongL/modbusPlcSimulator/master/imgs/screenshot-register.png "register window")
 
 
@@ -22,7 +22,7 @@ Register display window
 + Click the play button in the play window to refresh the data according to the CSV. When refreshing, select a row from the [data. CSV] to refresh the data.
 + Do not close the play window. Currently, closing the play window will end the data refresh thread.
 + You can view the underlying access of Modbus Protocol in the log window, and the Modbus reading and writing are recorded.
-+ If you don't want to comile it. You just need download and run it. Go directly to [Release Page] (https://github.com/alongl/modbusplcsimulator/releases) to download this program
++ If you don't want to comile it. You just need download and run it. Go directly to [Release Page](https://github.com/alongl/modbusplcsimulator/releases) to download this program
 
 
 ##  3.  Principle
@@ -41,10 +41,10 @@ Register display window
 + 1. address
 Modbus protocol uses 1 more address than the actual address. The address displayed when viewing with modscan +1. It is recommended to set offsetaddone=1 in the configuration file app.cfg
 + 2. Value type
-At present, the int type is processed as a 16 bit 1 register.
-Use DWORD for 32-bit int
+At present, the int type is processed as a 16 bit 1 register.  
+Use DWORD for 32-bit int.  
 Float is treated as 32-bit.
-Real is treated as a 32-bit floating-point number.
+Real is treated as a 32-bit floating-point number. 
 
 
 ## 6. Todo
