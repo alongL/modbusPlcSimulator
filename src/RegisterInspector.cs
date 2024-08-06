@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
 
 using Modbus.Data;
 
@@ -25,7 +26,12 @@ namespace modbusPlcSimulator
             _selectIdStr = str;
             InitializeComponent();
             SetStyle(ControlStyles.DoubleBuffer | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-            
+
+            // 这部分解决了 ListView 的频闪问题
+            Type dgvType = listView1.GetType();
+            PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            pi.SetValue(listView1, true, null);
+
             initUI();
             timer1.Start();
         }
