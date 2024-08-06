@@ -66,20 +66,65 @@ namespace modbusPlcSimulator
             {
                 length = 1000;
             }
-           listView1.BeginUpdate();
+            listView1.BeginUpdate();
 
-           listView1.Clear();
-           for (int index = 0; index < length ; index++)
+            listView1.Clear();
+            bool isJumpOver = false; // 是否跳过当前数据的显示。当上一个数据占了这个数据的位置时为 true
+            for (int index = 0; index < length ; index++)
             {
                 int address = index + startAdress;
                 string line = "<" + address.ToString().PadLeft(4, '0') + ">: ";
                 ushort value = data[address];
-                line += value.ToString();
+                if (isJumpOver)
+                {
+                    line += "-"; // 跳过时使用 "-" 表示该数据被占用
+                    isJumpOver = false;
+                }
+                else
+                {
 
-               ListViewItem item = new ListViewItem();
-               item.Text=line;
-               listView1.Items.Add(item);
-            }
+                    int groupIndex = comboBox_Register.SelectedIndex == 0 ? 3 : 4;
+                    Node.DataType dt = Node.DataType.INT16;
+                    Tuple<int, int> key = new Tuple<int, int>(groupIndex, address);
+                    if (_node.dataTypeDic.ContainsKey(key))
+                    {
+                        dt = _node.dataTypeDic[key];
+                        if (Node.DataType.INT16 == dt)
+                        {
+                            isJumpOver = false;
+                            line += value.ToString();
+                        }
+                        else if (Node.DataType.INT32 == dt)
+                        {
+                            isJumpOver = true;
+                            // 转换数据
+                            ushort value2 = data[address + 1];
+                            uint val = (uint)((value2 << 16) | (value & 0xffff));
+                            line += val.ToString();
+                        }
+                        else if (Node.DataType.FLOAT == dt)
+                        {
+                            isJumpOver = true;
+                            // 转换数据
+                            ushort value2 = data[address + 1];
+                            byte[] bytes = new byte[4];
+                            float val;
+                            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, bytes, 0, 2);
+                            Buffer.BlockCopy(BitConverter.GetBytes(value2), 0, bytes, 2, 2);
+                            val = BitConverter.ToSingle(bytes, 0);
+                            line += val.ToString("F3");
+                        }
+                    }
+                    else
+                    {
+                        isJumpOver = false;
+                        line += value.ToString();
+                    }
+                }
+                ListViewItem item = new ListViewItem();
+                item.Text = line;
+                listView1.Items.Add(item);
+             }
             this.listView1.EndUpdate();  //结束数据处理，UI界面一次性绘制。 
         }
 
