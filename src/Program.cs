@@ -10,7 +10,9 @@ namespace modbusPlcSimulator
 {
     static class Program
     {
-        static public LogForm _logForm = null; 
+        static public LogForm _logForm = null;
+        static public RegisterInspector.NumericConvertType numericConvertType
+            = RegisterInspector.NumericConvertType.LittleEndian;
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>

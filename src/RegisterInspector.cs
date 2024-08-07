@@ -63,6 +63,65 @@ namespace modbusPlcSimulator
             refreshUI();
         }//initUI
 
+        public enum NumericConvertType {
+            // 对于数值 val = 0x01020304
+            LittleEndian,     // 将字节顺序为 04 03 02 01 的数据转换为 val
+            LittleEndianSwap, // 将字节顺序为 03 04 01 02 的数据转换为 val
+            BigEndian,        // 将字节顺序为 01 02 03 04 的数据转换为 val
+            BigEndianSwap     // 将字节顺序为 02 01 03 04 的数据转换为 val
+        };
+
+        static ushort swapBytes(ushort val)
+        {
+            return (ushort)((val << 8) | (val >> 8));
+        }
+
+        private uint toUint(ushort val1, ushort val2, NumericConvertType type)
+        {
+            uint ret;
+            if (NumericConvertType.LittleEndian == type
+                || NumericConvertType.BigEndianSwap == type)
+            {
+                val1 = swapBytes(val1);
+                val2 = swapBytes(val2);
+            }
+            if (NumericConvertType.LittleEndian == type
+                || NumericConvertType.LittleEndianSwap == type)
+            {
+                ret = (uint)((val2 << 16) | (val1 & 0xffff));
+            }
+            else
+            {
+                ret = (uint)((val1 << 16) | (val2 & 0xffff));
+            }
+            return ret;
+        }
+
+        private float toFloat(ushort val1, ushort val2, NumericConvertType type)
+        {
+            float ret;
+            byte[] bytes = new byte[4];
+            if (NumericConvertType.LittleEndian == type
+                || NumericConvertType.BigEndianSwap == type)
+            {
+                val1 = swapBytes(val1);
+                val2 = swapBytes(val2);
+            }
+            if (NumericConvertType.LittleEndian == type
+                || NumericConvertType.LittleEndianSwap == type)
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(val1), 0, bytes, 0, 2);
+                Buffer.BlockCopy(BitConverter.GetBytes(val2), 0, bytes, 2, 2);
+            }
+            else
+            {
+                Buffer.BlockCopy(BitConverter.GetBytes(val2), 0, bytes, 0, 2);
+                Buffer.BlockCopy(BitConverter.GetBytes(val1), 0, bytes, 2, 2);
+            }
+            ret = BitConverter.ToSingle(bytes, 0);
+            return ret;
+        }
+
         private void refreshUI()
         {
             mutexRefreshUI.WaitOne();
@@ -122,7 +181,7 @@ namespace modbusPlcSimulator
                             isJumpOver = true;
                             // 转换数据
                             ushort value2 = data[address + 1];
-                            uint val = (uint)((value2 << 16) | (value & 0xffff));
+                            uint val = toUint(value, value2, Program.numericConvertType);
                             line += val.ToString();
                         }
                         else if (Node.DataType.FLOAT == dt)
@@ -130,11 +189,7 @@ namespace modbusPlcSimulator
                             isJumpOver = true;
                             // 转换数据
                             ushort value2 = data[address + 1];
-                            byte[] bytes = new byte[4];
-                            float val;
-                            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, bytes, 0, 2);
-                            Buffer.BlockCopy(BitConverter.GetBytes(value2), 0, bytes, 2, 2);
-                            val = BitConverter.ToSingle(bytes, 0);
+                            float val = toFloat(value, value2, Program.numericConvertType);
                             line += val.ToString("F3");
                         }
                     }

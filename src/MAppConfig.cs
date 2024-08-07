@@ -125,7 +125,20 @@ namespace modbusPlcSimulator
                 {
                     string name = item.Key;
                     string value = item.Value;
-                    //int iValue = 0;
+
+                    // 四字节数据转换方式
+                    if (name == "numericconverttype")
+                    {
+                        int val = int.Parse(value);
+                        switch (val)
+                        {
+                        default:
+                        case 0: Program.numericConvertType = RegisterInspector.NumericConvertType.LittleEndian; break;
+                        case 1: Program.numericConvertType = RegisterInspector.NumericConvertType.LittleEndianSwap; break;
+                        case 2: Program.numericConvertType = RegisterInspector.NumericConvertType.BigEndian; break;
+                        case 3: Program.numericConvertType = RegisterInspector.NumericConvertType.BigEndianSwap; break;
+                        }
+                    }
                 }
                 return true;
             }
