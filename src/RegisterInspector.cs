@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Threading;
 
 using Modbus.Data;
 
@@ -20,6 +21,7 @@ namespace modbusPlcSimulator
 
         public string _selectIdStr { get; set; }
         private Node _node;
+        private Mutex mutexRefreshUI = new Mutex(); // refreshUI 时的互斥对象，防止多线程争抢导致互锁
 
         public RegisterInspector(string str)
         {
@@ -33,7 +35,11 @@ namespace modbusPlcSimulator
             pi.SetValue(listView1, true, null);
 
             initUI();
-            timer1.Start();
+        }
+
+        void _node_DataStoreWrittenTo(object sender, DataStoreEventArgs e)
+        {
+            refreshUI();
         }
 
 
@@ -50,6 +56,7 @@ namespace modbusPlcSimulator
                 if (node._id.ToString() == _selectIdStr)
                 {
                     _node = node;
+                    _node.getDataStore().DataStoreWrittenTo += _node_DataStoreWrittenTo;
                     comboBox1.SelectedIndex = i;
                 }
             }
@@ -59,8 +66,12 @@ namespace modbusPlcSimulator
 
         private void refreshUI()
         {
+            mutexRefreshUI.WaitOne();
+
             //数据更新，UI暂时挂起，直到EndUpdate绘制控件，可以有效避免闪烁并大大提高加载速度 
             ModbusDataCollection<ushort> data = getRegisters();
+
+            int maxAddr = 0xffff + 1;
             
             int startAdress = 0;
             int length = 1000;
@@ -72,6 +83,13 @@ namespace modbusPlcSimulator
             {
                 length = 1000;
             }
+
+            // 检查地址范围，防止超出界限
+            if (startAdress < 0) startAdress = 0;
+            if (startAdress > maxAddr) startAdress = maxAddr;
+            if (length < 0) length = 0;
+            if (startAdress + length > maxAddr) length = maxAddr - startAdress;
+
             listView1.BeginUpdate();
 
             listView1.Clear();
@@ -132,6 +150,8 @@ namespace modbusPlcSimulator
                 listView1.Items.Add(item);
              }
             this.listView1.EndUpdate();  //结束数据处理，UI界面一次性绘制。 
+
+            mutexRefreshUI.ReleaseMutex();
         }
 
         private ModbusDataCollection<ushort> getRegisters()
@@ -146,15 +166,12 @@ namespace modbusPlcSimulator
            return data;
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            refreshUI();
-        }
-
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)//设备变更
         {
             int index = comboBox1.SelectedIndex;
+            if (_node != null) _node.getDataStore().DataStoreWrittenTo -= _node_DataStoreWrittenTo;
             _node = NodeMgr._nodeList[index];
+            _node.getDataStore().DataStoreWrittenTo += _node_DataStoreWrittenTo;
             refreshUI();
         }
 
@@ -169,6 +186,34 @@ namespace modbusPlcSimulator
         private void comboBox_Register_SelectionChangeCommitted(object sender, EventArgs e)
         {
             refreshUI();
+        }
+
+        private void textBox_adress_TextChanged(object sender, EventArgs e)
+        {
+            refreshUI();
+        }
+
+        private void textBox_length_TextChanged(object sender, EventArgs e)
+        {
+            refreshUI();
+        }
+
+        private void textBox_adress_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // 只接受数字输入
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox_length_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // 只接受数字输入
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
 
