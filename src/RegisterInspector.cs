@@ -42,17 +42,16 @@ namespace modbusPlcSimulator
             refreshUI();
         }
 
-
         private void initUI()
         {
             this.listView1.Clear();
             comboBox1.Items.Clear();
-            for(int i = 0;i<NodeMgr._nodeList.Count;i++)
+            for (int i = 0; i < NodeMgr._nodeList.Count; i++)
             {
                 Node node = NodeMgr._nodeList[i];
                 string name = node._name;
                 comboBox1.Items.Add(name);
-                
+
                 if (node._id.ToString() == _selectIdStr)
                 {
                     _node = node;
@@ -157,13 +156,13 @@ namespace modbusPlcSimulator
         private ModbusDataCollection<ushort> getRegisters()
         {
             ModbusDataCollection<ushort> data = null;
-            switch(comboBox_Register.SelectedIndex)
+            switch (comboBox_Register.SelectedIndex)
             {
                 case 0: data = _node.getDataStore().HoldingRegisters; break;//03功能
                 case 1: data = _node.getDataStore().InputRegisters; break;//04功能
                 default: data = _node.getDataStore().HoldingRegisters; break;
             }
-           return data;
+            return data;
         }
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)//设备变更
