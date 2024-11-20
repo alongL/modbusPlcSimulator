@@ -36,8 +36,14 @@ namespace modbusPlcSimulator
         private DataStore _dataStore;
         private byte _slaveId = 1; //设备id,默认为1
 
+        // 数据的类型。用于记录某个地址的数据的类型
+        public enum DataType{ INT16, INT32, FLOAT };
+        // 数据类型字典。用于记录某个地址的数据类型
+        public Dictionary<Tuple<int, int>, DataType> dataTypeDic = new Dictionary<Tuple<int,int>,DataType>();
+
         private DataTable _dt=new DataTable();//保存配置文件
         private Dictionary<string, int> _ioName2index=new Dictionary<string,int>();//保存ioName 到在datable中的索引
+
         public DataStore getDataStore()
         {
             return _dataStore;
@@ -299,21 +305,25 @@ namespace modbusPlcSimulator
                    case "WORD":
                    case "INT"://目前主控把INT当作16位
                        setValue16(groupindex, offset, (ushort)(value_f * coe_reverse));
+                       dataTypeDic.Add(new Tuple<int,int>(groupindex, offset), DataType.INT16);
                        break;
                    case "INT32":
                    case "DINT":
                    case "DWORD":
                        setValue32(groupindex, offset, (int)value_f * coe_reverse);
+                       dataTypeDic.Add(new Tuple<int,int>(groupindex, offset), DataType.INT32);
                        break;
                    case "REAL":
                    case "FLOAT":
                        value_f = float.Parse(valueStr);
                        setValue32(groupindex, offset, value_f * coe_reverse);
+                       dataTypeDic.Add(new Tuple<int,int>(groupindex, offset), DataType.FLOAT);
                        break;
                   case "BIT"://先不管
                        return true;
                    default:
                        setValue16(groupindex, offset, (ushort)(value_f * coe_reverse));
+                       dataTypeDic.Add(new Tuple<int,int>(groupindex, offset), DataType.INT16);
                        break; 
                }
            }

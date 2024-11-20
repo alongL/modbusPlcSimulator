@@ -48,6 +48,6 @@ Real is treated as a 32-bit floating-point number.
 
 
 ## 6. Todo
-+ 1. The value of floating-point number displayed in register viewer
++ 1. ~~The value of floating-point number displayed in register viewer~~
 + 2. Set the value of variable bit by bit
 
